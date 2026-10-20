@@ -1,0 +1,99 @@
+/* ═══════════════════════════════════════════════════════════
+   MAGI AI — floating assistant. Uses the portfolio's own tokens
+   (--c1 cyan, --c2 violet, --glass, Orbitron / Rajdhani / JetBrains Mono)
+═══════════════════════════════════════════════════════════ */
+.magi{position:fixed;right:24px;bottom:24px;z-index:300;font-family:'Rajdhani',sans-serif}
+.magi *{box-sizing:border-box}
+
+/* Floating button */
+.magi-fab{position:relative;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--c1);background:radial-gradient(circle at 30% 25%,rgba(0,255,247,0.22),rgba(6,10,30,0.95) 70%);border:1px solid rgba(0,255,247,0.55);box-shadow:0 0 26px rgba(0,255,247,0.3),inset 0 0 18px rgba(0,255,247,0.12);cursor:pointer;padding:0;transition:transform .3s cubic-bezier(.23,1,.32,1),box-shadow .3s ease,color .3s}
+.magi-fab:hover{transform:translateY(-3px) scale(1.05);color:#fff;box-shadow:0 0 40px rgba(0,255,247,0.5),0 0 70px rgba(191,0,255,0.2),inset 0 0 22px rgba(0,255,247,0.2)}
+.magi-fab:focus-visible,.magi-icon-btn:focus-visible,.magi-send:focus-visible,.magi-chip:focus-visible{outline:2px solid var(--c1);outline-offset:3px}
+.magi-fab-badge{position:absolute;top:-4px;right:-4px;min-width:22px;height:18px;padding:0 5px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:0.55rem;font-weight:700;letter-spacing:0.04em;color:#fff;background:linear-gradient(135deg,var(--c2),var(--c3));border-radius:9px;box-shadow:0 0 12px rgba(191,0,255,0.6);transition:opacity .25s,transform .3s}
+.magi[data-open="true"] .magi-fab-badge{opacity:0;transform:scale(.5)}
+.magi-fab svg{width:26px;height:26px;position:absolute;transition:transform .35s ease,opacity .25s ease}
+.magi-ico-close{opacity:0;transform:rotate(-90deg) scale(.6)}
+.magi[data-open="true"] .magi-ico-chat{opacity:0;transform:rotate(90deg) scale(.6)}
+.magi[data-open="true"] .magi-ico-close{opacity:1;transform:none}
+.magi-fab-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(191,0,255,0.55);animation:magiPulse 2.6s ease-out infinite;pointer-events:none}
+.magi[data-open="true"] .magi-fab-ring{animation:none;opacity:0}
+@keyframes magiPulse{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.45);opacity:0}}
+
+/* Panel */
+.magi-panel{position:absolute;right:0;bottom:78px;width:392px;height:min(600px,calc(100vh - 130px));height:min(600px,calc(100dvh - 130px));display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,rgba(8,12,34,0.96),rgba(3,5,18,0.97));border:1px solid rgba(0,255,247,0.22);border-radius:6px;box-shadow:0 30px 90px rgba(0,0,0,0.65),0 0 60px rgba(0,255,247,0.1),0 0 90px rgba(191,0,255,0.08);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);opacity:0;visibility:hidden;transform:translateY(18px) scale(.96);transform-origin:bottom right;transition:opacity .3s ease,transform .35s cubic-bezier(.23,1,.32,1),visibility 0s linear .35s}
+.magi[data-open="true"] .magi-panel{opacity:1;visibility:visible;transform:none;transition:opacity .3s ease,transform .35s cubic-bezier(.23,1,.32,1)}
+.magi-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c1),var(--c2),transparent)}
+
+/* Header */
+.magi-head{display:flex;align-items:center;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(0,255,247,0.1);flex-shrink:0}
+.magi-avatar{width:40px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;font-size:1rem;color:var(--c1);background:rgba(0,255,247,0.07);border:1px solid rgba(0,255,247,0.4);border-radius:50%;box-shadow:0 0 16px rgba(0,255,247,0.25);text-shadow:0 0 10px var(--c1)}
+.magi-id{flex:1;min-width:0}
+.magi-name{font-family:'Orbitron',monospace;font-weight:700;font-size:0.82rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text)}
+.magi-status{display:flex;align-items:center;gap:7px;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.magi-dot{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:var(--c1);box-shadow:0 0 8px var(--c1);animation:blink 2s infinite}
+.magi-icon-btn{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,0.08);border-radius:50%;color:var(--muted);cursor:pointer;padding:0;transition:all .25s}
+.magi-icon-btn svg{width:16px;height:16px}
+.magi-icon-btn:hover{color:var(--c1);border-color:rgba(0,255,247,0.4);box-shadow:0 0 14px rgba(0,255,247,0.18)}
+
+/* Messages */
+.magi-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 16px 8px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(0,255,247,0.25) transparent}
+.magi-body::-webkit-scrollbar{width:6px}
+.magi-body::-webkit-scrollbar-thumb{background:rgba(0,255,247,0.2);border-radius:3px}
+.magi-msg{display:flex;max-width:88%;animation:magiIn .35s cubic-bezier(.23,1,.32,1) both}
+.magi-msg.bot{align-self:flex-start}
+.magi-msg.user{align-self:flex-end}
+@keyframes magiIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.magi-bubble{padding:11px 15px;font-size:0.95rem;line-height:1.6;border-radius:4px 14px 14px 14px;color:#cdd8ee;background:rgba(255,255,255,0.045);border:1px solid rgba(0,255,247,0.14);overflow-wrap:anywhere;word-break:break-word}
+.magi-msg.user .magi-bubble{border-radius:14px 4px 14px 14px;color:#fff;background:linear-gradient(135deg,rgba(0,255,247,0.16),rgba(191,0,255,0.2));border-color:rgba(0,255,247,0.3)}
+.magi-msg.error .magi-bubble{color:#ff8fb3;background:rgba(255,0,110,0.07);border-color:rgba(255,0,110,0.35)}
+.magi-bubble p+p,.magi-bubble ul+p,.magi-bubble p+ul{margin-top:8px}
+.magi-bubble ul{padding-left:18px}
+.magi-bubble li+li{margin-top:3px}
+.magi-bubble strong{color:#fff;font-weight:600}
+.magi-bubble code{font-family:'JetBrains Mono',monospace;font-size:0.8em;padding:1px 6px;border-radius:3px;color:var(--c1);background:rgba(0,255,247,0.08)}
+.magi-bubble a{color:var(--c1);text-decoration:underline;text-underline-offset:3px}
+.magi-retry{margin-top:8px;display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--c1);background:transparent;border:1px solid rgba(0,255,247,0.35);border-radius:3px;padding:6px 12px;cursor:pointer;transition:all .25s}
+.magi-retry:hover{background:rgba(0,255,247,0.1);box-shadow:0 0 14px rgba(0,255,247,0.2)}
+
+/* Typing indicator */
+.magi-typing .magi-bubble{display:flex;align-items:center;gap:5px;padding:14px 16px}
+.magi-typing i{width:7px;height:7px;border-radius:50%;background:var(--c1);box-shadow:0 0 8px var(--c1);animation:magiDot 1.2s ease-in-out infinite}
+.magi-typing i:nth-child(2){animation-delay:.18s;background:#8f6bff}
+.magi-typing i:nth-child(3){animation-delay:.36s;background:var(--c2)}
+@keyframes magiDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+/* Suggestion chips */
+.magi-chips{display:flex;gap:8px;overflow-x:auto;padding:6px 16px 10px;flex-shrink:0;scrollbar-width:none}
+.magi-chips::-webkit-scrollbar{display:none}
+.magi-chips:empty{display:none}
+.magi-chip{flex:0 0 auto;font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.05em;padding:7px 12px;color:var(--c1);background:rgba(0,255,247,0.06);border:1px solid rgba(0,255,247,0.2);border-radius:2px;cursor:pointer;white-space:nowrap;transition:all .25s}
+.magi-chip:hover{background:rgba(0,255,247,0.13);border-color:rgba(0,255,247,0.45);box-shadow:0 0 12px rgba(0,255,247,0.18)}
+
+/* Input */
+.magi-form{display:flex;align-items:flex-end;gap:10px;padding:10px 14px 8px;border-top:1px solid rgba(0,255,247,0.1);flex-shrink:0}
+.magi-form textarea{flex:1;min-width:0;resize:none;max-height:110px;min-height:44px;padding:11px 14px;font-family:'Rajdhani',sans-serif;font-size:1rem;line-height:1.4;color:var(--text);background:rgba(0,0,0,0.4);border:1px solid rgba(0,255,247,0.14);border-radius:3px;outline:none;transition:border-color .25s,box-shadow .25s;cursor:text}
+.magi-form textarea::placeholder{color:rgba(90,106,138,0.6)}
+.magi-form textarea:focus{border-color:rgba(0,255,247,0.45);box-shadow:0 0 0 3px rgba(0,255,247,0.06),0 0 20px rgba(0,255,247,0.08)}
+.magi-send{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--c1);background:rgba(0,255,247,0.07);border:1px solid var(--c1);border-radius:3px;cursor:pointer;padding:0;transition:all .3s;box-shadow:0 0 16px rgba(0,255,247,0.15)}
+.magi-send svg{width:19px;height:19px}
+.magi-send:hover:not(:disabled){background:rgba(0,255,247,0.16);color:#fff;box-shadow:0 0 28px rgba(0,255,247,0.4)}
+.magi-send:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.magi-foot{padding:0 14px 12px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.1em;color:rgba(90,106,138,0.75);flex-shrink:0}
+
+/* Touch devices: normal cursor */
+@media(hover:none),(pointer:coarse){.magi-fab,.magi-icon-btn,.magi-send,.magi-chip,.magi-retry{cursor:pointer}}
+
+/* Phones: panel becomes a near-full-width sheet that always fits the screen */
+@media(max-width:520px){
+  .magi{right:14px;bottom:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .magi-fab{width:54px;height:54px}
+  .magi-panel{position:fixed;left:10px;right:10px;bottom:calc(82px + env(safe-area-inset-bottom,0px));top:auto;width:auto;height:min(620px,calc(100vh - 150px));height:min(620px,calc(100dvh - 150px))}
+  .magi-form textarea{font-size:16px} /* prevents iOS zoom-on-focus */
+  .magi-msg{max-width:92%}
+}
+@media(max-height:520px){
+  .magi-panel{height:calc(100vh - 100px);height:calc(100dvh - 100px);bottom:70px}
+}
+@media(prefers-reduced-motion:reduce){
+  .magi *,.magi-panel{animation:none!important;transition-duration:.01s!important}
+}

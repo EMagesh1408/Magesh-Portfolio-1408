@@ -1,0 +1,8 @@
+{
+  "name": "magesh-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Magesh Kumar E — portfolio with Magi AI chatbot",
+  "scripts": { "dev": "node dev-server.js" },
+  "engines": { "node": ">=18" }
+}
